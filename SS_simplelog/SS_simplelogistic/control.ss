@@ -1,6 +1,6 @@
 #V3.30
 #C file created using the SS_writectl function in the R package r4ss
-#C file write time: 2019-07-30 12:28:42
+#C file write time: 2019-08-05 15:25:56
 #
 1 # 0 means do not read wtatage.ss; 1 means read and usewtatage.ss and also read and use growth parameters
 1 #_N_Growth_Patterns
@@ -34,7 +34,7 @@
 #_no additional input for selected M option; read 1P per morph
 1 # GrowthModel: 1=vonBert with L1&L2; 2=Richards with L1&L2; 3=age_specific_K_incr; 4=age_specific_K_decr;5=age_specific_K_each; 6=NA; 7=NA; 8=growth cessation
 0 #_Age(post-settlement)_for_L1;linear growth below this
-9 #_Growth_Age_for_L2 (999 to use as Linf)
+11 #_Growth_Age_for_L2 (999 to use as Linf)
 -999 #_exponential decay for growth above maxage (value should approx initial Z; -999 replicates 3.24; -998 to not allow growth above maxage)
 0 #_placeholder for future growth feature
 #
@@ -42,8 +42,8 @@
 0 #_CV_Growth_Pattern:  0 CV=f(LAA); 1 CV=F(A); 2 SD=F(LAA); 3 SD=F(A); 4 logSD=F(A)
 3 #_maturity_option:  1=length logistic; 2=age logistic; 3=read age-maturity matrix by growth_pattern; 4=read age-fecundity; 5=disabled; 6=read length-maturity
 # Age Maturity or Age fecundity:
-#_0	1	2	3	4	5	6	7	8	9	10
-0	0.018	0.1192	0.5	0.8808	0.982	0.9975	0.9997	1	1	1	#_1
+#_0	1	2	3	4	5	6	7	8	9	10	11	12
+0	0.018	0.1192	0.5	0.8808	0.982	0.9975	0.9997	1	1	1	1	1	#_1
 1 #_First_Mature_Age
 1 #_fecundity option:(1)eggs=Wt*(a+b*Wt);(2)eggs=a*L^b;(3)eggs=a*Wt^b; (4)eggs=a+b*L; (5)eggs=a+b*W
 0 #_hermaphroditism option:  0=none; 1=female-to-male age-specific fxn; -1=male-to-female age-specific fxn
@@ -91,7 +91,7 @@
 2 #_F_Method:  1=Pope; 2=instan. F; 3=hybrid (hybrid is recommended)
 5 #_max F or harvest rate, depends on F_Method
 #_overall start F value; overall phase; N detailed inputs to read
-0.2 1 0 #_F_setup
+0.2 2 0 #_F_setup
 #_fleet, yr, seas, Fvalue, se, phase
 #
 #_initial_F_parms

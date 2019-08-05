@@ -53,7 +53,7 @@ dat$spawn_month <- tmp_month_spawn
 
 
 dat$Nsexes <- 1
-dat$Nages <- ASAP_rdat$parms$nages
+dat$Nages <- ASAP_rdat$parms$nages+2 # because want F reporting up to the ASAP nages.
 # dat$Nareas
 # dat$Nfleets
 dat$fleetinfo$surveytiming <- c(-1, 1 ,1) # season long catch is -1.
@@ -99,10 +99,12 @@ dat$CPUE <- new_CPUE
 
 # population length bins (need even if not using length comp)
 # I think does not matter what these are if not using length comp data?
+tmp_nbins <- 2  # to bins should be sufficient
 dat$lbin_method
-dat$binwidth
 dat$minimum_size
 dat$maximum_size
+# use formula according to SS manual (could also use lbin_method 2 instead.)
+dat$binwidth <- (dat$maximum_size - dat$minimum_size)/(tmp_nbins-1)
 
 # No length comp data included, so don't need. code to get rid of length comp,
 # if necessary:
@@ -113,7 +115,7 @@ dat$maximum_size
 # dat$lencomp <- NULL
 
 # age comp data 
-new_agebin_vector <- 1:dat$Nages
+new_agebin_vector <- 1:(dat$Nages-2)
 dat$N_agebins <- length(new_agebin_vector)
 dat$agebin_vector <- new_agebin_vector
 
@@ -128,27 +130,42 @@ new_ageerror <- data.frame(matrix(c(rep(-1, times = (dat$Nages+1)),
 colnames(new_ageerror) <- paste0("age", 0:dat$Nages)
 dat$ageerror <- new_ageerror
 
-# TODO: check this, but leave for now.
-#I think we assume the obs combine males and females so set to 0.?
+#I think we assume the obs combine males and females so set to 0.
 dat$age_info$combine_M_F <- c(0,0,0)
-# Bin method for age data: using population bin (1) ok? Or is actual length (3)
-# better?
+# Bin method for age data: irrelevant because only needed for 
+# conditional age-at-length.
 dat$Lbin_method <- 1
 
 #get age comp
 # TODO: add in the fishery age comp; however, only have proportions and total
 # weight, not numbers of fish. HOw to input this as age comp data in SS?
 new_fish_agecomp_prop <-  ASAP_rdat$catch.comp.mats$catch.fleet1.ob
+# rescale proportions using the catch n effective. Might be a better way to do
+# this?
+neff_catch <- ASAP_rdat$fleet.catch.Neff.init
+new_fish_agecomp <- new_fish_agecomp_prop # Rick says SS will rescale to proportions anyway
+# coerce to data frame
+new_fish_agecomp_dat <- data.frame(new_fish_agecomp)
+new_fish_agecomp_n <- data.frame(Nsamp = as.vector(neff_catch))
+colnames(new_fish_agecomp_dat) <- paste0("f", 1:ncol(new_fish_agecomp_dat))
+
+new_fish_agecomp_df <- data.frame(Yr = as.integer(rownames(new_fish_agecomp_prop)), 
+                             Seas = as.integer(dat$spawn_month), 
+                             FltSvy = 1, Gender = 0, Part = 0, Ageerr = 1, 
+                             Lbin_low = -1, Lbin_hi = -1) %>% 
+                      bind_cols(new_fish_agecomp_n) %>% 
+                      bind_cols(new_fish_agecomp_dat)
 
 # survey
 newagecomp_dat_prop <- ASAP_rdat$index.comp.mats$ind01.ob    
 samplesize <- ASAP_rdat$index.Neff.init[1, ]
-new_agecomp <- apply(newagecomp_dat_prop, MARGIN = 2, function(x) x*samplesize)
+# no need to rescale to numbers, according to rick
+new_agecomp <- newagecomp_dat_prop
+
 # coerce to data frame
 new_agecomp_dat <- data.frame(new_agecomp)
 new_agecomp_n <- data.frame(Nsamp = samplesize)
 colnames(new_agecomp_dat) <- paste0("f", 1:ncol(new_agecomp_dat))
-new_agecomp_dat <- data.frame(lapply(new_agecomp_dat, as.integer))
 
 new_agecomp_df <- data.frame(Yr = as.integer(rownames(newagecomp_dat_prop)), 
                              Seas = ASAP_rdat$control.parms$index.month[1], 
@@ -159,7 +176,7 @@ new_agecomp_df <- data.frame(Yr = as.integer(rownames(newagecomp_dat_prop)),
 # git rid of rows with Nsamp = 0
 new_agecomp_df <- filter(new_agecomp_df, Nsamp > 0)
 # replace old agecomp data.
-dat$agecomp <- new_agecomp_df
+dat$agecomp <- bind_rows(new_fish_agecomp_df, new_agecomp_df)
 
 # All the following should be set to 0 already:
 dat$use_MeanSize_at_Age_obs <- 0
@@ -246,7 +263,7 @@ ctl$CV_Growth_Pattern
 ctl$maturity_option <- 3  # to read
 #In this model, maturity is the same across yrs, so just grab the first row.
 tmp_Age_Maturity <- ASAP_rdat$maturity[1, ]
-tmp_Age_Maturity <- c(0, tmp_Age_Maturity) # add yr 0
+tmp_Age_Maturity <- c(0, tmp_Age_Maturity, 1, 1) # add yr 0, plus 2 years b/c max age is 12 in the SS model.
 # make into a dataframe.
 tmp_Age_Maturity <- data.frame(matrix(tmp_Age_Maturity, nrow = 1))
 colnames(tmp_Age_Maturity) <- as.character(0:(ncol(tmp_Age_Maturity)-1))
@@ -318,8 +335,9 @@ ctl$F_Method <- 2 # I think this is what to use? Sounds like most similar to ASA
 ASAP_rdat$initial.guesses$Fmult.year1.init
 # Note that the F setup values are probably used differently than the ASAP values
 # that they were specified as.
-ctl$F_setup <- c(ASAP_rdat$initial.guesses$Fmult.year1.init, 
-                 ASAP_rdat$control.parms$phases$phase.Fmult.year1, 0) 
+# Rick suggested using phase = 2 below so SS will do hybrid in phase 1 to get 
+# good starting values to use in phase 2
+ctl$F_setup <- c(ASAP_rdat$initial.guesses$Fmult.year1.init, 2, 0)
 ctl$maxF <- ASAP_rdat$options$Fmult.max.value
 ctl$F_iter <- NULL # b/c only specify for method 3.
 
@@ -511,7 +529,7 @@ tmp_wtatagefcast <- tmp_wtatage_df %>%
 tmp_wtatage_df <- bind_rows(tmp_wtatage_df, tmp_wtatagefcast)
 
 # change the read in values
-wtatage$maxage <- dat$Nages
+wtatage$maxage <- dat$Nages-2
 wtatage$wtatage_df <- tmp_wtatage_df
 
 # write wtatage file -----------------------------------------------------------
