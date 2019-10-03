@@ -1,7 +1,7 @@
 #V3.30
 #C data file created using the SS_writedat function in the R package r4ss
 #C should work with SS version: 
-#C file write time: 2019-08-05 15:25:53
+#C file write time: 2019-10-03 14:30:10
 #
 1986 #_styr
 2005 #_endyr
@@ -10,7 +10,7 @@
 2 #_Nsubseasons
 5.2258064516129 #_spawn_month
 1 #_Nsexes
-12 #_Nages
+10 #_Nages
 1 #_Nareas
 3 #_Nfleets
 #_fleetinfo
@@ -118,9 +118,9 @@
 #
 #_ageing_error
 1 #_N_ageerror_definitions
-#_age0	age1	age2	age3	age4	age5	age6	age7	age8	age9	age10	age11	age12
--1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	#_1
- 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	#_2
+#_age0	age1	age2	age3	age4	age5	age6	age7	age8	age9	age10
+-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	-1.000	#_1
+ 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	 0.001	#_2
 #
 #_age_info
 #_mintailcomp	addtocomp	combine_M_F	CompressBins	CompError	ParmSelect	minsamplesize

@@ -53,7 +53,7 @@ dat$spawn_month <- tmp_month_spawn
 
 
 dat$Nsexes <- 1
-dat$Nages <- ASAP_rdat$parms$nages+2 # because want F reporting up to the ASAP nages.
+dat$Nages <- ASAP_rdat$parms$nages 
 # dat$Nareas
 # dat$Nfleets
 dat$fleetinfo$surveytiming <- c(-1, 1 ,1) # season long catch is -1.
@@ -115,7 +115,7 @@ dat$binwidth <- (dat$maximum_size - dat$minimum_size)/(tmp_nbins-1)
 # dat$lencomp <- NULL
 
 # age comp data 
-new_agebin_vector <- 1:(dat$Nages-2)
+new_agebin_vector <- 1:(dat$Nages)
 dat$N_agebins <- length(new_agebin_vector)
 dat$agebin_vector <- new_agebin_vector
 
@@ -263,7 +263,7 @@ ctl$CV_Growth_Pattern
 ctl$maturity_option <- 3  # to read
 #In this model, maturity is the same across yrs, so just grab the first row.
 tmp_Age_Maturity <- ASAP_rdat$maturity[1, ]
-tmp_Age_Maturity <- c(0, tmp_Age_Maturity, 1, 1) # add yr 0, plus 2 years b/c max age is 12 in the SS model.
+tmp_Age_Maturity <- c(0, tmp_Age_Maturity) # add yr 0
 # make into a dataframe.
 tmp_Age_Maturity <- data.frame(matrix(tmp_Age_Maturity, nrow = 1))
 colnames(tmp_Age_Maturity) <- as.character(0:(ncol(tmp_Age_Maturity)-1))
@@ -294,15 +294,18 @@ ctl$Use_steep_init_equi <- 0
 ctl$Sigma_R_FofCurvature <- 0
 
 #SR parms
-ctl$SRparm[1,"INIT"] <- log(ASAP_rdat$initial.guesses$SR.inits$SR.scaler.init)
-ctl$SRparm[1,"PHASE"] <- ASAP_rdat$control.parms$phases$phase.SR.scaler
-ctl$SRparm[2, "INIT"] <- ASAP_rdat$initial.guesses$SR.inits$SR_steepness.init
-ctl$SRparm[2, "PHASE"] <- ASAP_rdat$control.parms$phases$phase.steepness
+ctl$SRparm["SR_LN(R0)","INIT"] <- log(ASAP_rdat$initial.guesses$SR.inits$SR.scaler.init)
+ctl$SRparm["SR_LN(R0)","PHASE"] <- ASAP_rdat$control.parms$phases$phase.SR.scaler
+ctl$SRparm["SR_BH_steep", "INIT"] <- ASAP_rdat$initial.guesses$SR.inits$SR_steepness.init
+ctl$SRparm["SR_BH_steep", "PHASE"] <- ASAP_rdat$control.parms$phases$phase.steepness
 # make sure no priors are used. Do any other elements need to be  changed?
 ctl$SRparm$PR_type <- rep(0, length.out = length(ctl$SRparm$PR_type))
 if(length(unique(ASAP_rdat$control.parms$recruit.cv))==1){
-  ctl$SRparm[3,"INIT"] <- sqrt(log(unique(ASAP_rdat$control.parms$recruit.cv)^2+1))
-  ctl$SRparm[3, "PHASE"] <- -3
+  # using ASAP:
+  #ctl$SRparm["SR_sigmaR","INIT"] <- sqrt(log(unique(ASAP_rdat$control.parms$recruit.cv)^2+1))
+  # judgement from Rick: (make larger)
+  ctl$SRparm["SR_sigmaR", "INIT"] <- 0.7
+  ctl$SRparm["SR_sigmaR", "PHASE"] <- -3
 } else {
   stop("The recruitment cv varies by year in ASAP so cannot simply replace the",
        "sigmaR param in SS.")
@@ -312,23 +315,28 @@ if(length(unique(ASAP_rdat$control.parms$recruit.cv))==1){
 ctl$do_recdev <- 1
 ctl$MainRdevYrFirst <- dat$styr
 ctl$MainRdevYrLast <- dat$endyr
+
 ctl$recdev_phase <- ASAP_rdat$control.parms$phases$phase.recruit.devs
-# don't used advanced SR, though.
-ctl$recdev_adv <- 0 # I think no bias adjustment, to line up with ASAP/
-ctl$recdev_early_start         <- NULL
-ctl$recdev_early_phase         <- NULL
-ctl$Fcast_recr_phase           <- NULL
-ctl$lambda4Fcast_recr_like     <- NULL
-ctl$last_early_yr_nobias_adj   <- NULL
-ctl$first_yr_fullbias_adj      <- NULL
-ctl$last_yr_fullbias_adj       <- NULL
-ctl$first_recent_yr_nobias_adj <- NULL
-ctl$max_bias_adj               <- NULL
-ctl$period_of_cycles_in_recr   <- NULL
-ctl$min_rec_dev                <- NULL
-ctl$max_rec_dev                <- NULL
-ctl$N_Read_recdevs             <- NULL
-# Fiushing mortality
+# start rec devs Nages years earlier in order to get the initial age comp 
+# to be estimated in SS
+# these values were chosen by Rick based on the rec devs errors, so difficult
+# to make generalizeable code.
+ctl$recdev_adv <- 1
+ctl$recdev_early_start         <- -ctl$Nages
+ctl$recdev_early_phase         <- 3
+ctl$Fcast_recr_phase           <- 0
+ctl$lambda4Fcast_recr_like     <- 1
+# this needs to be "tuned", so difficult to write generalizable code as I understand.
+ctl$last_early_yr_nobias_adj   <- 1970
+ctl$first_yr_fullbias_adj      <- 1976
+ctl$last_yr_fullbias_adj       <- 2002
+ctl$first_recent_yr_nobias_adj <- dat$endyr + 1 # would want to change based on # of forecast yrs 
+ctl$max_bias_adj               <- 0.9
+ctl$period_of_cycles_in_recr   <- 0
+ctl$min_rec_dev                <- -5
+ctl$max_rec_dev                <- 5
+ctl$N_Read_recdevs             <- 0
+# Fishing mortality
 ctl$F_ballpark                 
 ctl$F_ballpark_year <-  -2001 # make sure neg to disable.
 ctl$F_Method <- 2 # I think this is what to use? Sounds like most similar to ASAP...
@@ -529,7 +537,7 @@ tmp_wtatagefcast <- tmp_wtatage_df %>%
 tmp_wtatage_df <- bind_rows(tmp_wtatage_df, tmp_wtatagefcast)
 
 # change the read in values
-wtatage$maxage <- dat$Nages-2
+wtatage$maxage <- dat$Nages
 wtatage$wtatage_df <- tmp_wtatage_df
 
 # write wtatage file -----------------------------------------------------------
@@ -553,10 +561,13 @@ SS_writewtatage(wtatage, file.path(SS_mod_dir, "wtatage.ss"), overwrite = TRUE)
 # Manipulate and write starter -------------------------------------------------
 old_starter <- starter
 # change F_report options
-starter$F_report_units <- 4
+starter$F_report_units <- 5
+# Note, however, that SS will ignore ages if they are close than 2 years to the 
+# maximum age
 starter$F_age_range <- c(ASAP_rdat$options$Freport.agemin, 
                          ASAP_rdat$options$Freport.agemax
                          )
+starter$F_report_basis <- 0
 SS_writestarter(starter, dir = SS_mod_dir, verbose = FALSE, overwrite = TRUE)
 # Manipulate and write forecast ------------------------------------------------
 # TODO: to the extent possible, set these options the same as already set within
