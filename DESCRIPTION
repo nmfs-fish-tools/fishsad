@@ -1,0 +1,19 @@
+Package: fsad
+Title: Fisheries Stock Assessment Data
+Version: 0.0.0.9000
+Authors: NMFS National Modeling Team
+Maintainer: NMFS National Modeling Team <bai.li@noaa.gov>
+Description: This package is a data package. It contains input and output data from multiple stock assessment pacakges. The data can be used for model testing and comparison. 
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
+Depends: 
+    R (>= 3.5.0),
+Imports:
+    usethis,        
+    ASAPplots,
+    r4ss
+Remotes:
+    cmlegault/ASAPplots
