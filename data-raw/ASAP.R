@@ -2,7 +2,6 @@
 
 folder_name <- file.path("data-raw", "ASAP")
 
-
 # code to prepare `asap_simple_` dataset ------------------------------------------------------
 
 asap_simple_input <- ASAPplots::ReadASAP3DatFile(file.path(folder_name, "asap_simple.dat"))
