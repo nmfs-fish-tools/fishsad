@@ -1,24 +1,24 @@
-# fsad - Fisheries Stock Assessment Data
+# fishsad - Fisheries Stock Assessment Data
 Repository for example data that can be used for cross-model comparison
 
 ## Installation instructions
  
-Please install and load `fsad` from Github using the `remotes` package as follows:
+Please install and load `fishsad` from Github using the `remotes` package as follows:
 
 ```r
 install.packages("remotes")
-remotes::install_github("Bai-Li-NOAA/fsad")
-library(fsad)
+remotes::install_github("nmfs-fish-tools/fishsad")
+library(fishsad)
 ```
 
 ## Load example data
 ```r
-asap_input <- fsad::asap_simple_input
-asap_output <- fsad::asap_simple_output
-ss_input <- fsad::ss_empirical_waa_input
+asap_input <- fishsad::asap_simple_input
+asap_output <- fishsad::asap_simple_output
+ss_input <- fishsad::ss_empirical_waa_input
 ```
 The source links of the data are included in help pages.  
-More documentation of the data can be obtained using `?fsad::asap_simple_input`.
+More documentation of the data can be obtained using `?fishsad::asap_simple_input`.
 
 ## Acknowledgements
 
