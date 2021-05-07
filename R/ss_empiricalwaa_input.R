@@ -12,4 +12,4 @@
 #'   ...
 #' }
 #' @source \url{https://github.com/nmfs-stock-synthesis/user-examples}
-"ss_empirical_waa_input"
+"ss_empiricalwaa_input"

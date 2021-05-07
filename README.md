@@ -15,7 +15,7 @@ library(fishsad)
 ```r
 asap_input <- fishsad::asap_simple_input
 asap_output <- fishsad::asap_simple_output
-ss_input <- fishsad::ss_empirical_waa_input
+ss_input <- fishsad::ss_empiricalwaa_input
 ```
 The source links of the data are included in help pages.  
 More documentation of the data can be obtained using `?fishsad::asap_simple_input`.

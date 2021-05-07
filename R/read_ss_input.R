@@ -90,7 +90,7 @@ ss_input <- function(file_path,
     ss_wtatage <- NULL
   }
 
-  ss_input <- list(
+   ss_input <- list(
     ss_data = ss_data,
     ss_control = ss_control,
     ss_starter = ss_starter,
