@@ -12,7 +12,7 @@
 #' @return Returns a list with input data.
 #' @example
 #' \dontrun{
-#' ss_input(
+#' read_ss_input(
 #' file_path,
 #' data_file = "data.ss",
 #' control_file = "control.ss",
@@ -24,14 +24,13 @@
 #' }
 #' @export
 
-ss_input <- function(file_path,
-                     data_file,
-                     control_file,
-                     starter_file,
-                     forecast_file,
-                     watage_file,
-                     version = "3.30"){
-
+read_ss_input <- function(file_path,
+                          data_file,
+                          control_file,
+                          starter_file,
+                          forecast_file,
+                          watage_file,
+                          version = "3.30") {
   ss_data <- r4ss::SS_readdat(
     file = file.path(file_path, data_file),
     version = version,
@@ -90,7 +89,7 @@ ss_input <- function(file_path,
     ss_wtatage <- NULL
   }
 
-   ss_input <- list(
+  ss_input <- list(
     ss_data = ss_data,
     ss_control = ss_control,
     ss_starter = ss_starter,

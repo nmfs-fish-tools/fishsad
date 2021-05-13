@@ -3,7 +3,7 @@ folder_name <- file.path("data-raw", "SS")
 
 # `ss_empirical_waa_` dataset  --------------------------------------------------------
 
-ss_empiricalwaa_input <- fishsad::ss_input(
+ss_empiricalwaa_input <- fishsad::read_ss_input(
   file_path = folder_name,
   data_file = "ss_empiricalwaa_data.ss",
   control_file = "ss_empiricalwaa_control.ss",
