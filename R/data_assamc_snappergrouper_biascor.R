@@ -1,0 +1,13 @@
+#' Age-Structured Stock Assessment Model Comparison (ASSAMC) Project input and output data based on a simulated hypothetical population - recruitment bias correction case.
+#'
+#' A dataset containing the operating model input and output based on information available for actual stocks from the snapper-grouper complex that have been individually assessed in the Atlantic waters off the southeastern US. It uses bias correction in recruitment.
+#'
+#' @format A data list with 2 lists of data:
+#' \describe{
+#'   \item{om_input}{ASSAMC stock assessment input data list. It includes 45 lists of data.}
+#'   \item{om_output}{ASSAMC stock assessment output data list. It includes 14 lists of data:year, SSB, abundance, biomass.mt, N.age, L.age, L.knum, L.mt, msy, f, FAA, survey_age_comp, survey_index, and survey_q.}
+#'   \item{em_input}{ASSAMC stock assessment estimation model input data list. It includes 9 lists of data: L.obs, survey.obs, L.age.obs, survey.age.obs, n.L, n.survey, survey_q, cv.L, and cv.survey.}
+#'   ...
+#' }
+#' @source \url{https://github.com/Bai-Li-NOAA/Age_Structured_Stock_Assessment_Model_Comparison}
+"assamc_snappergrouper_biascor"
