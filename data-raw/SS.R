@@ -13,4 +13,5 @@ ss_empiricalwaa_input <- fishsad::read_ss_input(
   version = "3.30"
 )
 
-usethis::use_data(ss_empiricalwaa_input, overwrite = TRUE)
+ss_empiricalwaa <- list(input = ss_empiricalwaa_input)
+usethis::use_data(ss_empiricalwaa, overwrite = TRUE)
